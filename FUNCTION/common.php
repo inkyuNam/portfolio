@@ -101,3 +101,90 @@ if ( ! function_exists('get_multiple_upload')) {
             $_FILES[$fileInputName]['size']);
     }
 }
+
+/*
+| ----------------------------------------------------------------------------------------
+| 배열을 원하는 만큼 잘라서 사용
+| ----------------------------------------------------------------------------------------
+*/
+if ( ! function_exists('chunk_array')) {
+    function chunk_array($array, $arraySize): array
+    {
+        $result = [];
+        $chunk = [];
+
+        foreach ($array as $key => $value) {
+            $chunk[] = $value;
+
+            if (count($chunk) === $arraySize) {
+                $result[] = $chunk;
+                $chunk = [];
+            }
+        }
+
+        if (!empty($chunk)) {
+            $result[] = $chunk;
+        }
+
+        return $result;
+    }
+}
+
+/*
+| ----------------------------------------------------------------------------------------
+| 배열 안에 배열이 있을 경우 원하는만큼 자르기
+| ----------------------------------------------------------------------------------------
+*/
+if ( ! function_exists('chunk_array2')) {
+    function chunk_array2($array, $arrayInName, $arraySize): array
+    {
+        $result = [];
+        $chunk = [];
+
+        $arrayCount = 0;
+        $inArrayCount = 0;
+        foreach ($array as $key => $value) {
+            $chunk[] = $value;
+
+            $arrayCount ++;
+            $inArrayCount += count($value[$arrayInName]);
+
+            if (($inArrayCount + $arrayCount) > $arraySize) {
+                $result[] = $chunk;
+                $chunk = [];
+                $arrayCount = 0;
+                $inArrayCount = 0;
+            }
+        }
+
+        if (!empty($chunk)) {
+            $result[] = $chunk;
+        }
+
+        return $result;
+    }
+}
+
+/*
+| ----------------------------------------------------------------------------------------
+| 여러겹의 배열들을 하나의 배열로 만들기
+| ----------------------------------------------------------------------------------------
+*/
+if ( ! function_exists('pull_array')) {
+    function pull_array($array,$arrayName): array
+    {
+        $result = [];
+        foreach ($array as $key => $value) {
+            if(isset($value[$arrayName]) && is_array($value[$arrayName])){
+                $value['rowCount'] = count($value[$arrayName]);
+            }
+            $result[] = $value;
+            if(isset($value[$arrayName]) && is_array($value[$arrayName])) {
+                foreach ($value[$arrayName] as $key2 => $value2) {
+                    $result[] = $value2;
+                }
+            }
+        }
+        return $result;
+    }
+}
